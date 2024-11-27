@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    platform: postgresql
+    driver-class-name: org.postgresql.Driver
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:postgresql://localhost:5432/sample
+    username: user
+    password: pass
+    hikari:
+      minimum-idle: 0
+      maximum-pool-size: 5
+  flyway:
+    enabled: false
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true

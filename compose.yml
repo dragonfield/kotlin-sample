@@ -1,0 +1,24 @@
+services:
+  postgresql:
+    image: postgres:12.7-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: appuser
+      POSTGRES_PASSWORD: password123
+      PGPASSWORD: password123
+      POSTGRES_DB: mydb
+      TZ: "Asia/Tokyo"
+    ports:
+      - 5432:5432
+    networks:
+      - my-nw
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+networks:
+  my-nw:
+    driver: bridge
