@@ -32,7 +32,7 @@ class EmployeeControllerV1Test {
     }
 
     @Test
-    fun `正常にすべての書籍情報が取得できる場合`() {
+    fun `正常にIDで指定した従業員情報が取得できる場合`() {
         // setup
         doReturn(Employee(id = "0001", firstName = "Taro", lastName = "Yamada"))
             .`when`(findEmployeeUseCase).findEmployee("0001")

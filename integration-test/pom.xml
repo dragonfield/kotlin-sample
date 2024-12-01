@@ -18,41 +18,17 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>17</java.version>
+        <kotlin.version>1.9.25</kotlin.version>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <maven.compiler.source>${java.version}</maven.compiler.source>
 
+        <flyway-core.version>11.0.0</flyway-core.version>
+
         <!-- Library versions -->
-        <spring.boot.version>2.7.0</spring.boot.version>
-        <junit-jupiter.version>5.8.1</junit-jupiter.version>
-        <junit-platform.version>1.8.1</junit-platform.version>
-        <rest-assured.version>5.1.1</rest-assured.version>
-        <postgresql.version>42.2.2</postgresql.version>
-        <DbSetup.version>2.1.0</DbSetup.version>
-
-        <docker-compose-maven-plugin.version>0.11.0</docker-compose-maven-plugin.version>
-        <maven-failsafe-plugin.version>3.0.0-M5</maven-failsafe-plugin.version>
-        <flyway-maven-plugin.version>8.5.9</flyway-maven-plugin.version>
+        <docker-compose-maven-plugin.version>1.0.0</docker-compose-maven-plugin.version>
+        <maven-failsafe-plugin.version>3.5.2</maven-failsafe-plugin.version>
+        <flyway-maven-plugin.version>11.0.0</flyway-maven-plugin.version>
     </properties>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-dependencies</artifactId>
-                <version>${spring.boot.version}</version>
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
-
-            <dependency>
-                <groupId>org.junit</groupId>
-                <artifactId>junit-bom</artifactId>
-                <version>${junit-jupiter.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
     <dependencies>
         <!-- ============================ -->
@@ -61,7 +37,26 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-kotlin</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-reflect</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-stdlib</artifactId>
         </dependency>
 
         <!-- ============================ -->
@@ -70,19 +65,12 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>${postgresql.version}</version>
             <scope>runtime</scope>
         </dependency>
 
         <!-- ============================ -->
         <!-- Provided Scoped Dependencies -->
         <!-- ============================ -->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <scope>provided</scope>
-            <optional>true</optional>
-        </dependency>
 
         <!-- ============================ -->
         <!-- Test Scoped Dependencies     -->
@@ -94,36 +82,72 @@
         </dependency>
 
         <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-test-junit5</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-database-postgresql</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.database-rider</groupId>
+            <artifactId>rider-junit5</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
             <groupId>io.rest-assured</groupId>
             <artifactId>rest-assured</artifactId>
-            <version>${rest-assured.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>io.rest-assured</groupId>
             <artifactId>json-path</artifactId>
-            <version>${rest-assured.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>io.rest-assured</groupId>
             <artifactId>xml-path</artifactId>
-            <version>${rest-assured.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.ninja-squad</groupId>
-            <artifactId>DbSetup</artifactId>
-            <version>${DbSetup.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
 
     <build>
+        <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
+        <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
         <plugins>
+            <plugin>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-maven-plugin</artifactId>
+                <configuration>
+                    <args>
+                        <arg>-Xjsr305=strict</arg>
+                    </args>
+                    <compilerPlugins>
+                        <plugin>spring</plugin>
+                    </compilerPlugins>
+                    <jvmTarget>${java.version}</jvmTarget>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.jetbrains.kotlin</groupId>
+                        <artifactId>kotlin-maven-allopen</artifactId>
+                        <version>${kotlin.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
@@ -143,7 +167,7 @@
                 <version>${docker-compose-maven-plugin.version}</version>
                 <configuration>
                     <projectName>integration-test</projectName>
-                    <file>../docker-compose.yml</file>
+                    <file>../compose.yml</file>
                     <workDir>../</workDir>
                     <wait>
                         <value>30</value>
@@ -174,6 +198,14 @@
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-maven-plugin</artifactId>
                 <version>${flyway-maven-plugin.version}</version>
+                <configuration>
+                    <url>jdbc:postgresql://localhost:5432/mydb</url>
+                    <user>appuser</user>
+                    <password>password123</password>
+                    <locations>
+                        <location>filesystem:../sample-api/src/main/resources/db/migration</location>
+                    </locations>
+                </configuration>
                 <executions>
                     <execution>
                         <id>pre-integration-test</id>
@@ -183,65 +215,14 @@
                         </goals>
                     </execution>
                 </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.flywaydb</groupId>
+                        <artifactId>flyway-database-postgresql</artifactId>
+                        <version>${flyway-core.version}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>
-    <profiles>
-        <profile>
-            <id>local-integration-test</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <properties>
-                <flyway.user>appuser</flyway.user>
-                <flyway.password>password123</flyway.password>
-                <flyway.url>jdbc:postgresql://localhost:5432/mydb</flyway.url>
-            </properties>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-failsafe-plugin</artifactId>
-                        <configuration>
-                            <systemProperties>
-                                <property><name>rest.assured.host</name><value>localhost</value></property>
-                                <property><name>rest.assured.port</name><value>8080</value></property>
-                                <property><name>database.url</name><value>jdbc:postgresql://localhost:5432/mydb</value></property>
-                                <property><name>database.user</name><value>appuser</value></property>
-                                <property><name>database.password</name><value>password123</value></property>
-                            </systemProperties>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>integration-test</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <properties>
-                <flyway.user>appuser</flyway.user>
-                <flyway.password>password123</flyway.password>
-                <flyway.url>jdbc:postgresql://localhost:5432/mydb</flyway.url>
-            </properties>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-failsafe-plugin</artifactId>
-                        <configuration>
-                            <systemProperties>
-                                <property><name>rest.assured.host</name><value>localhost</value></property>
-                                <property><name>rest.assured.port</name><value>8080</value></property>
-                                <property><name>database.url</name><value>jdbc:postgresql://localhost:5432/mydb</value></property>
-                                <property><name>database.user</name><value>appuser</value></property>
-                                <property><name>database.password</name><value>password123</value></property>
-                            </systemProperties>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 </project>

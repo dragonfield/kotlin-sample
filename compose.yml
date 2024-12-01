@@ -1,4 +1,28 @@
 services:
+  sample-api:
+    image: sample-api:TEST
+    container_name: sample-api
+    build:
+      context: ./sample-api
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgresql:
+        condition: service_healthy
+    networks:
+      - my-nw
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/mydb
+      SPRING_DATASOURCE_USERNAME: appuser
+      SPRING_DATASOURCE_PASSWORD: password123
+    healthcheck:
+      test: "curl http://localhost:8080/actuator/health/readiness || exit 1"
+      interval: 10s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
   postgresql:
     image: postgres:12.7-alpine
     restart: always

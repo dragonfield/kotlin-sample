@@ -11,6 +11,7 @@
 
     <modules>
         <module>sample-api</module>
+        <module>integration-test</module>
     </modules>
 
     <properties>
