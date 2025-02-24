@@ -7,9 +7,8 @@ import org.springframework.stereotype.Service
 
 @Service
 class FindEmployeeUseCase(
-    private val employeeRepository: EmployeeRepository
+    private val employeeRepository: EmployeeRepository,
 ) {
-
     fun findEmployee(id: String): Employee {
         val employee = employeeRepository.find(id)
 
@@ -19,5 +18,4 @@ class FindEmployeeUseCase(
 
         return employee
     }
-
 }

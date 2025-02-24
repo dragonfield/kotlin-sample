@@ -10,9 +10,8 @@ import org.springframework.stereotype.Repository
 
 @Repository
 class EmployeeRepositoryImpl(
-    private val mapper: EmployeeMapper
-): EmployeeRepository {
-
+    private val mapper: EmployeeMapper,
+) : EmployeeRepository {
     override fun find(id: String): Employee {
         try {
             val entity: EmployeeEntity? = mapper.find(id)
@@ -21,5 +20,4 @@ class EmployeeRepositoryImpl(
             throw SystemException(e)
         }
     }
-
 }

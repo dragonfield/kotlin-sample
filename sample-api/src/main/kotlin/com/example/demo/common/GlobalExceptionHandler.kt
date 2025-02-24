@@ -15,7 +15,7 @@ class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     fun handleEmployeeNotFoundException(e: EmployeeNotFoundException): ProblemDetail {
         val userId = e.id
-        val message = "specified employee (id=${userId}) is not found.";
+        val message = "specified employee (id=${userId}) is not found."
         log.info(message, e)
         val problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, message)
         problemDetail.status = HttpStatus.BAD_REQUEST.value()
@@ -30,5 +30,4 @@ class GlobalExceptionHandler {
         problemDetail.status = HttpStatus.INTERNAL_SERVER_ERROR.value()
         return problemDetail
     }
-
 }

@@ -1,5 +1,5 @@
 package com.example.demo.common
 
 class SystemException(
-    cause: Throwable
+    cause: Throwable,
 ) : RuntimeException(cause)

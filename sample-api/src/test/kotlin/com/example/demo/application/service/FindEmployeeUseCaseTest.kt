@@ -1,19 +1,19 @@
 package com.example.demo.application.service
 
-import org.assertj.core.api.Assertions.*
-import org.mockito.Mockito.*
-
 import com.example.demo.application.repository.EmployeeRepository
 import com.example.demo.common.EmployeeNotFoundException
 import com.example.demo.domain.Employee
+import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.InjectMocks
 import org.mockito.Mock
+import org.mockito.Mockito.doReturn
+import org.mockito.Mockito.doThrow
 import org.mockito.MockitoAnnotations
 
 class FindEmployeeUseCaseTest {
-
     @InjectMocks
     lateinit var target: FindEmployeeUseCase
 
@@ -29,7 +29,8 @@ class FindEmployeeUseCaseTest {
     fun `正常に指定したIDで従業員のモデルが取得できる場合`() {
         // setup
         doReturn(Employee(id = "001", firstName = "Taro", lastName = "Yamada"))
-            .`when`(employeeRepository).find("001")
+            .`when`(employeeRepository)
+            .find("001")
 
         // execute
         val actual = target.findEmployee("001")
@@ -43,7 +44,8 @@ class FindEmployeeUseCaseTest {
     fun `指定したIDで従業員のモデルが取得できない場合`() {
         // setup
         doThrow(EmployeeNotFoundException(id = "9999"))
-            .`when`(employeeRepository).find("9999")
+            .`when`(employeeRepository)
+            .find("9999")
 
         // execute & assert
         assertThatThrownBy {
@@ -52,5 +54,4 @@ class FindEmployeeUseCaseTest {
             assertThat(it.id).isEqualTo("9999")
         })
     }
-
 }

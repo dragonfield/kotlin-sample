@@ -9,12 +9,12 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/api/v1/employees")
 class EmployeeControllerV1(
-    private val findEmployeeUseCase: FindEmployeeUseCase
+    private val findEmployeeUseCase: FindEmployeeUseCase,
 ) {
-
     @GetMapping("/{id}")
-    fun getEmployee(@PathVariable id: String): EmployeeResponse {
+    fun getEmployee(
+        @PathVariable id: String,
+    ): EmployeeResponse {
         return EmployeeResponse.of(findEmployeeUseCase.findEmployee(id))
     }
-
 }

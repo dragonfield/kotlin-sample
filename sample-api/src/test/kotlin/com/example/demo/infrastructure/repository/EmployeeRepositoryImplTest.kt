@@ -1,7 +1,5 @@
 package com.example.demo.infrastructure.repository
 
-import org.assertj.core.api.Assertions.assertThat
-
 import com.example.demo.application.repository.EmployeeRepository
 import com.example.demo.domain.Employee
 import com.github.database.rider.core.api.configuration.DBUnit
@@ -9,6 +7,7 @@ import com.github.database.rider.core.api.configuration.Orthography
 import com.github.database.rider.core.api.connection.ConnectionHolder
 import com.github.database.rider.core.api.dataset.DataSet
 import com.github.database.rider.junit5.api.DBRider
+import org.assertj.core.api.Assertions.assertThat
 import org.flywaydb.core.Flyway
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
@@ -29,25 +28,26 @@ import java.util.concurrent.TimeUnit
 @DBRider
 @DBUnit(caseInsensitiveStrategy = Orthography.LOWERCASE, cacheConnection = false)
 class EmployeeRepositoryImplTest(
-    @Autowired var target: EmployeeRepository
+    @Autowired var target: EmployeeRepository,
 ) {
-
     companion object {
         @Container
         @JvmStatic
-        val postgresqlContainer = PostgreSQLContainer(DockerImageName.parse(PostgreSQLContainer.IMAGE).withTag("15.3"))
-            .withUsername("user")
-            .withPassword("pass")
-            .withDatabaseName("sample")
+        val postgresqlContainer =
+            PostgreSQLContainer(DockerImageName.parse(PostgreSQLContainer.IMAGE).withTag("15.3"))
+                .withUsername("user")
+                .withPassword("pass")
+                .withDatabaseName("sample")
 
         @JvmStatic
-        val connectionHolder: ConnectionHolder = ConnectionHolder {
-            DriverManager.getConnection(
-                postgresqlContainer.jdbcUrl,
-                postgresqlContainer.username,
-                postgresqlContainer.password
-            )
-        }
+        val connectionHolder: ConnectionHolder =
+            ConnectionHolder {
+                DriverManager.getConnection(
+                    postgresqlContainer.jdbcUrl,
+                    postgresqlContainer.username,
+                    postgresqlContainer.password,
+                )
+            }
 
         @DynamicPropertySource
         @JvmStatic
@@ -61,11 +61,14 @@ class EmployeeRepositoryImplTest(
         @JvmStatic
         fun setUpAll() {
             TimeUnit.MILLISECONDS.sleep(1000)
-            Flyway.configure().dataSource(
-                postgresqlContainer.jdbcUrl,
-                postgresqlContainer.username,
-                postgresqlContainer.password
-            ).load().migrate();
+            Flyway
+                .configure()
+                .dataSource(
+                    postgresqlContainer.jdbcUrl,
+                    postgresqlContainer.username,
+                    postgresqlContainer.password,
+                ).load()
+                .migrate()
         }
 
         @AfterAll
@@ -73,7 +76,6 @@ class EmployeeRepositoryImplTest(
         fun tearDownAll() {
             postgresqlContainer.close()
         }
-
     }
 
     @Test
@@ -85,7 +87,7 @@ class EmployeeRepositoryImplTest(
         val actual = target.find("101")
 
         // assert
-        val expected = Employee(id = "101", firstName="Taro", lastName="Yamada")
+        val expected = Employee(id = "101", firstName = "Taro", lastName = "Yamada")
         assertThat(actual).isEqualTo(expected)
     }
 
@@ -101,5 +103,4 @@ class EmployeeRepositoryImplTest(
         val expected = Employee.NULL
         assertThat(actual).isEqualTo(expected)
     }
-
 }

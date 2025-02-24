@@ -6,10 +6,11 @@ import com.example.demo.common.SystemException
 import com.example.demo.domain.Employee
 import io.restassured.module.mockmvc.RestAssuredMockMvc
 import io.restassured.module.mockmvc.RestAssuredMockMvc.given
-import org.hamcrest.Matchers.*
+import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito.*
+import org.mockito.Mockito.doReturn
+import org.mockito.Mockito.doThrow
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
@@ -19,7 +20,6 @@ import org.springframework.test.web.servlet.MockMvc
 
 @WebMvcTest
 class EmployeeControllerV1Test {
-
     @Autowired
     lateinit var mockMvc: MockMvc
 
@@ -35,7 +35,8 @@ class EmployeeControllerV1Test {
     fun `正常にIDで指定した従業員情報が取得できる場合`() {
         // setup
         doReturn(Employee(id = "0001", firstName = "Taro", lastName = "Yamada"))
-            .`when`(findEmployeeUseCase).findEmployee("0001")
+            .`when`(findEmployeeUseCase)
+            .findEmployee("0001")
 
         // execute & assert
         given()
@@ -51,7 +52,8 @@ class EmployeeControllerV1Test {
     fun `従業員情報が取得できない場合`() {
         // setup
         doThrow(EmployeeNotFoundException(id = "9999"))
-            .`when`(findEmployeeUseCase).findEmployee("9999")
+            .`when`(findEmployeeUseCase)
+            .findEmployee("9999")
 
         // execute & assert
         given()
@@ -69,7 +71,8 @@ class EmployeeControllerV1Test {
     fun `システム障害が発生した場合`() {
         // setup
         doThrow(SystemException(QueryTimeoutException("data access error")))
-            .`when`(findEmployeeUseCase).findEmployee("9999")
+            .`when`(findEmployeeUseCase)
+            .findEmployee("9999")
 
         // execute & assert
         given()
@@ -82,6 +85,4 @@ class EmployeeControllerV1Test {
             .body("instance", equalTo("/api/v1/employees/9999"))
             .body("detail", equalTo("org.springframework.dao.QueryTimeoutException: data access error"))
     }
-
-
 }

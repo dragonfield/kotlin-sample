@@ -6,8 +6,6 @@ import org.apache.ibatis.annotations.Select
 
 @Mapper
 interface EmployeeMapper {
-
     @Select("SELECT id, first_name, last_name FROM employees WHERE id = #{id}")
-    fun find(id: String): EmployeeEntity
-
+    fun find(id: String): EmployeeEntity?
 }

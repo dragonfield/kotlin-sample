@@ -6,8 +6,8 @@ import com.github.database.rider.core.api.connection.ConnectionHolder
 import com.github.database.rider.core.api.dataset.DataSet
 import com.github.database.rider.junit5.api.DBRider
 import io.restassured.RestAssured
-import io.restassured.RestAssured.*
-import org.hamcrest.Matchers.*
+import io.restassured.RestAssured.given
+import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpStatus
@@ -16,20 +16,20 @@ import java.sql.DriverManager
 @DBRider
 @DBUnit(caseInsensitiveStrategy = Orthography.LOWERCASE, cacheConnection = false)
 class EmployeeIT {
-
     companion object {
         const val JDBC_URL = "jdbc:postgresql://localhost:5432/mydb"
         const val JDBC_USERNAME = "appuser"
         const val JDBC_PASSWORD = "password123"
 
         @JvmStatic
-        val connectionHolder: ConnectionHolder = ConnectionHolder {
-            DriverManager.getConnection(
-                JDBC_URL,
-                JDBC_USERNAME,
-                JDBC_PASSWORD
-            )
-        }
+        val connectionHolder: ConnectionHolder =
+            ConnectionHolder {
+                DriverManager.getConnection(
+                    JDBC_URL,
+                    JDBC_USERNAME,
+                    JDBC_PASSWORD,
+                )
+            }
 
         @BeforeAll
         @JvmStatic
@@ -65,5 +65,4 @@ class EmployeeIT {
             .body("instance", equalTo("/api/v1/employees/9999"))
             .body("detail", equalTo("specified employee (id=9999) is not found."))
     }
-
 }
